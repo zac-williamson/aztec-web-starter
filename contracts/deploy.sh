@@ -30,5 +30,12 @@ aztec-wallet deploy \
     --alias counter \
     --init initialize \
     ./target/counter-Counter.json \
-    --args 0 accounts:deployer
+    --args 0
 
+
+# Contract deployed at 0x1d9b00c29e7103bad93c31649bc2f5f7d1b9c1b10fb36be104a2c26def20dd2f
+# Contract partial address 0x0ea51c9a708bc8ebe2251a294e8f1611fae229d117eb32da8031c86514427f1b
+# Contract init hash 0x1cb09a70d3ef572458dfb67db30a95339320d880d05f62642a18a9f68a678584
+# Deployment tx hash: 0x0843bad0bba4c43fbef7a7cf620aee667e5a791d0046e3e2e97b800a57fece1a
+# Deployment salt: 0x232562de65c426ded49dc945f5bf92a98d44b3403bc06de5998fa0aca511ebc5
+# Deployment fee: 1427845120

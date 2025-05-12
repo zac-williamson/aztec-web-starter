@@ -1,37 +1,102 @@
-import { initPXE, createAccount as createAndDeployAccount } from './aztec.ts'
 import { createLogger, PXE, Wallet } from '@aztec/aztec.js';
-import { getCounter, incrementCounter, registerContract } from "./counter-contract.ts";
+import { PrivateCounter } from "./counter.ts";
+import { initPXE } from './aztec.ts'
+import { createAccount, deployAccount, getAccount } from './account.ts'
 
 const nodeUrl = 'http://localhost:8080';
+const deployedContract = {
+  address: "0x10f78b7ca79d779669ac6446b5fea179b2be4b2747af05839f4909166f596414",
+  deployer: '0x1a41081a4e0dea2a0595258faa8531ac5cbe4a736ccd44c5c0827ca8720eae29',
+  salt: '0x24d65691d1c691b19826e32faa1021f4bed7163bf6be98e78af88246a16f4163'
+}
+
 const logger = createLogger('counter');
-const deployedContractAddress = "0x0d39c4f024ca34e1ac5ee5cc949c3a3d4d0992e6b092ed5c868af3ad19c0f11e";
+let ecdsaWallet: Wallet | null;
+let pxe: PXE;
+let privateCounter: PrivateCounter;
+
+// DOM Elements
+const createAccountButton = document.querySelector<HTMLButtonElement>('#create-account')!;
+const incrementCounterButton = document.querySelector<HTMLButtonElement>('#increment-counter')!;
+const accountDisplay = document.querySelector<HTMLDivElement>('#account-display')!;
+const statusMessage = document.querySelector<HTMLDivElement>('#status-message')!;
+
 
 function displayError(message: string) {
-  const errorMessage = document.querySelector<HTMLDivElement>('#error-message')!;
-  errorMessage.textContent = message;
-  errorMessage.classList.add('error');
+  statusMessage.textContent = message;
+  statusMessage.classList.add('error');
+  statusMessage.style.display = 'block';
 }
 
-function displayCounterValue(value: string) {
+function displayStatusMessage(message: string) {
+  statusMessage.textContent = message;
+  statusMessage.classList.remove('error');
+  statusMessage.style.display = message ? 'block' : 'none';
+}
+
+async function refreshAccount() {
+  if (!ecdsaWallet) {
+    createAccountButton.style.display = 'block';
+    incrementCounterButton.disabled = true;
+    return;
+  }
+
+  const address = ecdsaWallet.getAddress().toString();
+  const content = `Account: ${address.slice(0, 6)}...${address.slice(-4)}`;
+  accountDisplay.textContent = content;
+  createAccountButton.style.display = 'none';
+  incrementCounterButton.disabled = false;
+}
+
+async function refreshCounter() {
+  if (!ecdsaWallet) {
+    return;
+  }
+
+  const currentValue = await privateCounter.getCounter(ecdsaWallet);
   const counterValue = document.querySelector<HTMLDivElement>('#counter-value')!;
-  counterValue.textContent = value;
+  counterValue.textContent = currentValue.toString();
 }
 
-let ecdsaWallet: Wallet;
-let pxe: PXE;
+// On page load, load the PXE, contract, account, and display the counter value
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    displayStatusMessage('Initializing PXE...');
+    pxe = await initPXE(nodeUrl, logger);
 
-document.querySelector<HTMLButtonElement>('#create-account')!.addEventListener('click', async (e) => {
+    displayStatusMessage('Initializing Private Counter...');
+    privateCounter = new PrivateCounter(
+      pxe,
+      deployedContract.address,
+      deployedContract.deployer,
+      deployedContract.salt
+    );
+    await privateCounter.initialize();
+
+    displayStatusMessage('Checking for existing account...');
+    ecdsaWallet = await getAccount(pxe);
+
+    // Deploy the account if it's not publicly deployed
+    await refreshAccount();
+    await refreshCounter();
+    
+    displayStatusMessage('');
+  } catch (error) {
+    displayError(error instanceof Error ? error.message : 'An unknown error occurred');
+  }
+});
+
+// Create a new account
+createAccountButton.addEventListener('click', async (e) => {
   e.preventDefault();
-  e.stopPropagation();
   (e.target as HTMLButtonElement).disabled = true;
   (e.target as HTMLButtonElement).textContent = 'Creating account...';
 
   try {
-    logger.info('Creating account');
-    pxe = await initPXE(nodeUrl, logger);
-    ecdsaWallet = await createAndDeployAccount(pxe, logger);
+    ecdsaWallet = await createAccount(pxe, logger);
 
-    document.querySelector<HTMLButtonElement>('#increment-counter')!.disabled = false;
+    await refreshAccount();
+    await refreshCounter();
   } catch (error) {
     displayError(error instanceof Error ? error.message : 'An unknown error occurred');
   } finally {
@@ -40,21 +105,15 @@ document.querySelector<HTMLButtonElement>('#create-account')!.addEventListener('
   }
 });
 
-
-document.querySelector<HTMLButtonElement>('#increment-counter')!.addEventListener('click', async (e) => {
+// Increment the counter
+incrementCounterButton.addEventListener('click', async (e) => {
   e.preventDefault();
-  e.stopPropagation();
   (e.target as HTMLButtonElement).disabled = true;
   (e.target as HTMLButtonElement).textContent = 'Incrementing counter...';
+
   try {
-    logger.info('Registering contract');
-    await registerContract(pxe);
-
-    const res = await incrementCounter(deployedContractAddress, ecdsaWallet, pxe);
-    console.log(res);
-
-    const currentValue = await getCounter(deployedContractAddress, ecdsaWallet);
-    displayCounterValue(currentValue.toString());
+    await privateCounter.incrementCounter(ecdsaWallet);
+    await refreshCounter();
   } catch (error) {
     displayError(error instanceof Error ? error.message : 'An unknown error occurred');
   } finally {

@@ -70,14 +70,14 @@ export class CounterContract extends ContractBase {
   /**
    * Creates a tx to deploy a new instance of this contract.
    */
-  public static deploy(wallet: Wallet, headstart: (bigint | number), owner: AztecAddressLike) {
+  public static deploy(wallet: Wallet, headstart: (bigint | number)) {
     return new DeployMethod<CounterContract>(PublicKeys.default(), wallet, CounterContractArtifact, CounterContract.at, Array.from(arguments).slice(1));
   }
 
   /**
    * Creates a tx to deploy a new instance of this contract using the specified public keys hash to derive the address.
    */
-  public static deployWithPublicKeys(publicKeys: PublicKeys, wallet: Wallet, headstart: (bigint | number), owner: AztecAddressLike) {
+  public static deployWithPublicKeys(publicKeys: PublicKeys, wallet: Wallet, headstart: (bigint | number)) {
     return new DeployMethod<CounterContract>(publicKeys, wallet, CounterContractArtifact, CounterContract.at, Array.from(arguments).slice(2));
   }
 
@@ -136,14 +136,14 @@ export class CounterContract extends ContractBase {
   /** Type-safe wrappers for the public methods exposed by the contract. */
   public declare methods: {
     
-    /** get_counter(owner: struct) */
-    get_counter: ((owner: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+    /** get_counter(sender: struct) */
+    get_counter: ((sender: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
 
-    /** increment(owner: struct, sender: struct) */
-    increment: ((owner: AztecAddressLike, sender: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+    /** increment() */
+    increment: (() => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
 
-    /** initialize(headstart: integer, owner: struct) */
-    initialize: ((headstart: (bigint | number), owner: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+    /** initialize(headstart: integer) */
+    initialize: ((headstart: (bigint | number)) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
 
     /** public_dispatch(selector: field) */
     public_dispatch: ((selector: FieldLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;

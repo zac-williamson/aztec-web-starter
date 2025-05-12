@@ -1,12 +1,13 @@
 use dep::aztec::macros::aztec;
 
+
 #[aztec]
 pub contract Counter {
     use aztec::macros::{functions::{initializer, private, utility}, storage::storage};
     use aztec::prelude::{AztecAddress, Map};
-    use aztec::protocol_types::traits::{ToField};
+    use aztec::protocol_types::traits::ToField;
     use easy_private_state::EasyPrivateUint;
-    use value_note::{balance_utils};
+    use value_note::balance_utils;
 
     #[storage]
     struct Storage<Context> {
@@ -15,27 +16,28 @@ pub contract Counter {
 
     #[initializer]
     #[private]
-    // We can name our initializer anything we want as long as it's marked as aztec(initializer)
-    fn initialize(headstart: u64, owner: AztecAddress) {
+    fn initialize(headstart: u64) {
         let counters = storage.counters;
-        counters.at(owner).add(headstart, owner, context.msg_sender());
+        let sender = context.msg_sender();
+        counters.at(sender).add(headstart, sender, sender);
     }
 
     #[private]
-    fn increment(owner: AztecAddress, sender: AztecAddress) {
+    fn increment() {
+        let sender = context.msg_sender();
         unsafe {
             dep::aztec::oracle::debug_log::debug_log_format(
                 "Incrementing counter for owner {0}",
-                [owner.to_field()],
+                [sender.to_field()],
             );
         }
         let counters = storage.counters;
-        counters.at(owner).add(1, owner, sender);
+        counters.at(sender).add(1, sender, sender);
     }
 
     #[utility]
-    unconstrained fn get_counter(owner: AztecAddress) -> Field {
+    unconstrained fn get_counter(sender: AztecAddress) -> Field {
         let counters = storage.counters;
-        balance_utils::get_balance(counters.at(owner).set)
+        balance_utils::get_balance(counters.at(sender).set)
     }
 }

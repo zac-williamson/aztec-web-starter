@@ -1,25 +1,34 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Private counter on Aztec</title>
-    <link rel="stylesheet" href="./src/style.css">
-  </head>
-  <body>
-    
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Private counter on Aztec</title>
+  <link rel="stylesheet" href="./src/style.css">
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="nav-title">Private Counter</div>
+    <div id="account-display" class="account-display"></div>
+    <button id="create-account" type="button" style="display: none;">Create Account</button>
+  </nav>
+
+  <main class="main-content">
     <div class="card">
-      <button id="create-account" type="button">Create Account</button>
-      <br />
-      <br />
+      <div class="counter-display">
+        <div class="counter-title">Current Counter Value</div>
+        <div id="counter-value" class="counter-value">-</div>
+      </div>
+
       <button id="increment-counter" type="button" disabled>Increment Counter</button>
-      <br />
-      <br />
-      <div id="error-message" class="error-message"></div>
-      <div id="counter-value" class="counter-value"></div>
     </div>
 
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+    <div id="status-message" class="status-message">s</div>
+  </main>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
 </html>
