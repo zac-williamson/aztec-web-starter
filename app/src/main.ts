@@ -2,18 +2,12 @@ import { AztecAddress, Fr, Wallet, type AccountWallet } from '@aztec/aztec.js';
 import { LocalWallet } from './local-wallet.ts'
 import { CounterContract } from '../artifacts/Counter.ts';
 
-// Aztec Node URL
-const nodeUrl = 'http://localhost:8080';
-
-// Address of the deployed Counter contract
-const deployedContract = {
-  address: "0x10f78b7ca79d779669ac6446b5fea179b2be4b2747af05839f4909166f596414",
-  deployer: '0x1a41081a4e0dea2a0595258faa8531ac5cbe4a736ccd44c5c0827ca8720eae29',
-  salt: '0x24d65691d1c691b19826e32faa1021f4bed7163bf6be98e78af88246a16f4163'
-}
-
 // Local variables
 let wallet: LocalWallet;
+const nodeUrl = 'http://localhost:8080';
+const counterContractDeployer = import.meta.env.VITE_COUNTER_CONTRACT_DEPLOYER;
+const counterContractSalt = import.meta.env.VITE_COUNTER_CONTRACT_SALT;
+const counterContractAddress = import.meta.env.VITE_COUNTER_CONTRACT_ADDRESS;
 
 // DOM Elements
 const createAccountButton = document.querySelector<HTMLButtonElement>('#create-account')!;
@@ -35,8 +29,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     displayStatusMessage('Registering Private Counter...');
     await wallet.registerContract(
       CounterContract.artifact,
-      AztecAddress.fromString(deployedContract.deployer),
-      Fr.fromString(deployedContract.salt),
+      AztecAddress.fromString(counterContractDeployer),
+      Fr.fromString(counterContractSalt),
       [0]
     );
 
@@ -88,7 +82,7 @@ incrementCounterButton.addEventListener('click', async (e) => {
   try {
     // Prepare contract interaction
     const account = await wallet.getAccount();
-    const counter = await CounterContract.at(AztecAddress.fromString(deployedContract.address), account!);
+    const counter = await CounterContract.at(AztecAddress.fromString(counterContractAddress), account!);
     const interaction = counter.methods.increment();
 
     // Send transaction
@@ -107,7 +101,7 @@ incrementCounterButton.addEventListener('click', async (e) => {
 // Update the counter value
 async function updateCounterValue(account: Wallet) {
   // Prepare contract interaction
-  const counter = await CounterContract.at(AztecAddress.fromString(deployedContract.address), account);
+  const counter = await CounterContract.at(AztecAddress.fromString(counterContractAddress), account);
   const interaction = counter.methods.get_counter(account.getAddress());
 
   // Simulate the transaction
