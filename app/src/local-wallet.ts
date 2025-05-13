@@ -3,7 +3,6 @@ import {
   createLogger,
   createAztecNodeClient,
   AztecAddress,
-  PublicKeys,
   getContractInstanceFromDeployParams,
   ContractFunctionInteraction,
   SponsoredFeePaymentMethod,
@@ -21,6 +20,9 @@ import { ContractArtifact, getDefaultInitializer } from '@aztec/stdlib/abi';
 const logger = createLogger('wallet');
 const LocalStorageKey = 'aztec-account';
 
+// This is a minimal implementation of an Aztec wallet, that saves the private keys in local storage.
+// This does not implement `@aztec.js/Wallet` interface though
+// This is not meant for production use
 export class LocalWallet {
   private pxe!: PXE;
 
@@ -125,7 +127,6 @@ export class LocalWallet {
   // Register a contract with PXE
   async registerContract(artifact: ContractArtifact, deployer: AztecAddress, deploymentSalt: Fr, constructorArgs: any[]) {
     const instance = await getContractInstanceFromDeployParams(artifact, {
-      publicKeys: PublicKeys.default(),
       constructorArtifact: getDefaultInitializer(artifact),
       constructorArgs: constructorArgs,
       deployer: deployer,

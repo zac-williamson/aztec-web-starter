@@ -4,7 +4,7 @@ import { CounterContract } from '../artifacts/Counter.ts';
 
 // Local variables
 let wallet: LocalWallet;
-const nodeUrl = 'http://localhost:8080';
+const nodeUrl = import.meta.env.VITE_AZTEC_NODE_URL;
 const counterContractDeployer = import.meta.env.VITE_COUNTER_CONTRACT_DEPLOYER;
 const counterContractSalt = import.meta.env.VITE_COUNTER_CONTRACT_SALT;
 const counterContractAddress = import.meta.env.VITE_COUNTER_CONTRACT_ADDRESS;
