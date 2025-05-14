@@ -10,6 +10,14 @@ This is an example web app that demonstrates how to interact with an Aztec contr
 
 1. Start Aztec Sandbox by following the [Quick Start Guide](https://docs.aztec.network/developers/getting_started).
 
+Please note that this project is using `v0.85.0-alpha-testnet` version of Aztec and you should be running the Sandbox with the same version.
+
+```sh
+aztec-up alpha-testnet
+aztec start --sandbox
+```
+
+
 2. Deploy the contract in `/contracts`:
 
 ```sh
@@ -63,7 +71,21 @@ You can now interact with the deployed contract using the web app:
 
 - Create a new account (which will also save it to local storage)
 - Increment the counter
-- Refresh the page and see the account and counter value loaded
+- Refresh the page and see the account and counter value loaded with the previous value
 
-You can uncomment `config.proverEnabled = false;` in `app/src/local-wallet.ts` to send transactions without proving them (which is fine when working with the Sandbox).
 
+### Disable client proofs
+
+The Sanbox can accept transactions without the client-side proof. You can disable proof generation when working against the Sandbox as it will save time during development.
+
+To disable proving on the deploy script, run:
+
+```sh
+PXE_PROVER=none ./deploy.sh
+```
+
+To disable proving in the web app, you can add the following line in `app/src/local-wallet.ts` (uncomment it):
+
+```ts
+config.proverEnabled = false;
+```

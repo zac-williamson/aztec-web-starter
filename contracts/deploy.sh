@@ -1,11 +1,9 @@
 # Compile the contracts
 aztec-nargo compile
 
-# Create an account to deploy the contracts
-export NODE_URL=http://localhost:8080
-
-# You can run this script with PXE_PROVER=none env to disable client proofs (which is fine when working with the Sandbox)
-export PXE_PROVER=native
+# Node URL and prover settings (can be overridden via environment variables)
+: "${NODE_URL:=http://localhost:8080}"
+: "${PXE_PROVER:=native}"
 
 # Create an account
 PXE_PROVER=$PXE_PROVER aztec-wallet create-account \
