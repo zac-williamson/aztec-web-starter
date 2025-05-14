@@ -1,23 +1,23 @@
 {
   "name": "aztec-web-starter",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.85.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
-  "devDependencies": {
-    "typescript": "~5.7.2",
-    "vite": "^6.2.0",
-    "vite-plugin-node-polyfills": "^0.23.0"
-  },
   "dependencies": {
     "@aztec/accounts": "0.85.0-alpha-testnet.2",
     "@aztec/aztec.js": "0.85.0-alpha-testnet.2",
     "@aztec/noir-contracts.js": "0.85.0-alpha-testnet.2",
     "@aztec/pxe": "0.85.0-alpha-testnet.2"
+  },
+  "devDependencies": {
+    "typescript": "~5.7.2",
+    "vite": "^6.2.0",
+    "vite-plugin-node-polyfills": "^0.23.0"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

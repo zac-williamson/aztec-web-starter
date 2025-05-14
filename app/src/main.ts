@@ -21,7 +21,7 @@ const counterValue = document.querySelector<HTMLDivElement>('#counter-value')!;
 document.addEventListener('DOMContentLoaded', async () => {
   try {
     // Initialize the PXE and the wallet
-    displayStatusMessage('Initializing local wallet...');
+    displayStatusMessage('Connecting to node and initializing wallet...');
     wallet = new LocalWallet(nodeUrl);
     await wallet.initialize();
 
