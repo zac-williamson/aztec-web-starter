@@ -3,7 +3,7 @@
 This is an example web app that demonstrates how to interact with an Aztec contract using the Aztec JS SDK.
 
 - Uses a variation of the [Counter Contract](https://docs.aztec.network/developers/tutorials/codealong/contract_tutorials/counter_contract)
-- Includes a browser-based wallet. This is only for demonstration purposes and not for production use.
+- Includes an embedded wallet. This is only for demonstration purposes and not for production use.
 - Works on top of the Sandbox, but can be adapted to work with a testnet.
 
 ### Setup
@@ -65,7 +65,8 @@ VITE_COUNTER_CONTRACT_ADDRESS= // Value after "Contract deployed at"
 (cd app && yarn dev)
 ```
 
-<br />
+
+### Test the app
 
 You can now interact with the deployed contract using the web app:
 
@@ -73,10 +74,11 @@ You can now interact with the deployed contract using the web app:
 - Increment the counter
 - Refresh the page and see the account and counter value loaded with the previous value
 
+<br />
 
-### Disable client proofs
+## Disable client proofs
 
-The Sanbox can accept transactions without the client-side proof. You can disable proof generation when working against the Sandbox as it will save time during development.
+The Sanbox will accept transactions without a valid proof. You can disable proof generation when working against the Sandbox as it will save time during development.
 
 To disable proving on the deploy script, run:
 

@@ -23,7 +23,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     plugins: [
-      nodePolyfills({ include: ['process'] }),
+      nodePolyfills({ include: ['buffer', 'path'] }),
     ],
   };
 });

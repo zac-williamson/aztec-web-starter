@@ -23,7 +23,7 @@ const LocalStorageKey = 'aztec-account';
 // This is a minimal implementation of an Aztec wallet, that saves the private keys in local storage.
 // This does not implement `@aztec.js/Wallet` interface though
 // This is not meant for production use
-export class LocalWallet {
+export class EmbeddedWallet {
   private pxe!: PXE;
 
   constructor(private nodeUrl: string) { }

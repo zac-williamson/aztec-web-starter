@@ -1,9 +1,9 @@
 import { AztecAddress, Fr, Wallet, type AccountWallet } from '@aztec/aztec.js';
-import { LocalWallet } from './local-wallet.ts'
+import { EmbeddedWallet } from './embedded-wallet.ts'
 import { CounterContract } from '../artifacts/Counter.ts';
 
 // Local variables
-let wallet: LocalWallet;
+let wallet: EmbeddedWallet;
 const nodeUrl = import.meta.env.VITE_AZTEC_NODE_URL;
 const counterContractDeployer = import.meta.env.VITE_COUNTER_CONTRACT_DEPLOYER;
 const counterContractSalt = import.meta.env.VITE_COUNTER_CONTRACT_SALT;
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   try {
     // Initialize the PXE and the wallet
     displayStatusMessage('Connecting to node and initializing wallet...');
-    wallet = new LocalWallet(nodeUrl);
+    wallet = new EmbeddedWallet(nodeUrl);
     await wallet.initialize();
 
     // Register Counter contract with PXE
