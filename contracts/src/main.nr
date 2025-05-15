@@ -25,12 +25,6 @@ pub contract Counter {
     #[private]
     fn increment() {
         let sender = context.msg_sender();
-        unsafe {
-            dep::aztec::oracle::debug_log::debug_log_format(
-                "Incrementing counter for owner {0}",
-                [sender.to_field()],
-            );
-        }
         let counters = storage.counters;
         counters.at(sender).add(1, sender, sender);
     }
