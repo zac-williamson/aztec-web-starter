@@ -68,7 +68,7 @@ To disable proving in the deploy script, run:
 PXE_PROVER=none ./deploy.sh
 ```
 
-To disable proving in the web app, you can add the following line in `app/src/local-wallet.ts` (uncomment it):
+To disable proving in the web app, you can add the following line in `app/src/embedded-wallet.ts` (uncomment the existing line):
 
 ```ts
 config.proverEnabled = false;

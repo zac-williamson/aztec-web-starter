@@ -156,6 +156,6 @@ function displayAccount(account: AccountWallet | null) {
 
 function displayCounter(results: { [key: number]: number }) {
   voteResults.textContent = Object.entries(results).map(
-    ([key, value]) => `Candidate ${+key + 1}: ${value} votes`
+    ([key, value]) => `Candidate ${key}: ${value} votes`
   ).join('\n');
 }
