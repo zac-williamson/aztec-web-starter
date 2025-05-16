@@ -8,11 +8,11 @@ This is an example web app that demonstrates how to interact with an Aztec contr
 
 ### Setup
 
-1. Start Aztec Sandbox by following the [Quick Start Guide](https://docs.aztec.network/developers/getting_started).
+1. Install the Aztec tools from the first few steps in [Quick Start Guide](https://docs.aztec.network/developers/getting_started).
 
-Please note that this project uses `v0.86.0` version of Aztec SDK. If you have installed a different version, please update the version in the `app/package.json` file.
+Please note that this project uses `v0.86.0` version of Aztec SDK. If you wish to use a different version, please update the dependencies in the `app/package.json` file to match the version of your tools.
 
-Alternatively, you can use `v0.86.0` by running the following commands:
+Alternatively, you can specify `v0.86.0` when updating Aztec tools by running the following commands:
 
 ```sh
 aztec-up 0.86.0
@@ -37,6 +37,7 @@ Run the JS deploy script to deploy the contracts:
 ```
 
 This will deploy the contracts and save the deployment info to `app/deployed-contract.json`.
+The full process involves `Generating Client IVC proof`, and may take a few moments. For faster development the sandbox does not verify proofs, so this can optionally be disabled [here](#disable-client-proofs). 
 
 > Important: For a production app, you need to back up the deployment info file to a secure location as without it, you will not be able to recover the contract address.
 
@@ -50,7 +51,9 @@ This will deploy the contracts and save the deployment info to `app/deployed-con
 
 You can now interact with the deployed contract using the web app:
 
-- Create a new account (which will also save it to local storage)
+- Create a new account
+  - Like before, this will take some time to generate proofs
+  - Note: this will save your account keys to your browser's local storage
 - Cast a vote for one of the 5 candidates
 - Voting again should throw an error
 - Open another browser (or an incognito window), create a new account, and cast a vote

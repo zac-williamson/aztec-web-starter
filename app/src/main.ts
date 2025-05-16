@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       await updateCounterValue(account);
       displayStatusMessage('');
     } else {
-      displayStatusMessage('Creating new account to setup your private counter...');
+      displayStatusMessage('Create a new account to cast a vote.');
     }
   } catch (error) {
     displayError(error instanceof Error ? error.message : 'An unknown error occurred');
