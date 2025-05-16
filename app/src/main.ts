@@ -1,20 +1,23 @@
 import { AztecAddress, Fr, Wallet, type AccountWallet } from '@aztec/aztec.js';
 import { EmbeddedWallet } from './embedded-wallet.ts'
-import { CounterContract } from '../artifacts/Counter.ts';
+import { EasyPrivateVotingContract } from '../artifacts/EasyPrivateVoting.ts';
+import deploymentInfo from '../deployed-contract.json';
 
 // Local variables
 let wallet: EmbeddedWallet;
 const nodeUrl = import.meta.env.VITE_AZTEC_NODE_URL;
-const counterContractDeployer = import.meta.env.VITE_COUNTER_CONTRACT_DEPLOYER;
-const counterContractSalt = import.meta.env.VITE_COUNTER_CONTRACT_SALT;
-const counterContractAddress = import.meta.env.VITE_COUNTER_CONTRACT_ADDRESS;
+const votingContractDeployer = deploymentInfo.deployerAddress;
+const votingContractSalt = deploymentInfo.deploymentSalt;
+const votingContractAddress = deploymentInfo.contractAddress;
 
 // DOM Elements
 const createAccountButton = document.querySelector<HTMLButtonElement>('#create-account')!;
-const incrementCounterButton = document.querySelector<HTMLButtonElement>('#increment-counter')!;
+const voteForm = document.querySelector<HTMLFormElement>('.vote-form')!;
+const voteButton = document.querySelector<HTMLButtonElement>('#vote-button')!;
+const voteInput = document.querySelector<HTMLInputElement>('#vote-input')!;
 const accountDisplay = document.querySelector<HTMLDivElement>('#account-display')!;
 const statusMessage = document.querySelector<HTMLDivElement>('#status-message')!;
-const counterValue = document.querySelector<HTMLDivElement>('#counter-value')!;
+const voteResults = document.querySelector<HTMLDivElement>('#vote-results')!;
 
 
 // On page load
@@ -28,10 +31,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Register Counter contract with PXE
     displayStatusMessage('Registering Private Counter...');
     await wallet.registerContract(
-      CounterContract.artifact,
-      AztecAddress.fromString(counterContractDeployer),
-      Fr.fromString(counterContractSalt),
-      [0]
+      EasyPrivateVotingContract.artifact,
+      AztecAddress.fromString(votingContractDeployer),
+      Fr.fromString(votingContractSalt),
+      [AztecAddress.fromString(votingContractDeployer)]
     );
 
     // Get existing account
@@ -73,17 +76,24 @@ createAccountButton.addEventListener('click', async (e) => {
 });
 
 // Increment the counter
-incrementCounterButton.addEventListener('click', async (e) => {
+voteButton.addEventListener('click', async (e) => {
   e.preventDefault();
+
+  const candidate = parseInt(voteInput.value);
+  if (isNaN(candidate) || candidate < 1 || candidate > 5) {
+    displayError('Invalid candidate number');
+    return;
+  }
+
   const button = e.target as HTMLButtonElement;
   button.disabled = true;
-  button.textContent = 'Incrementing counter...';
+  button.textContent = 'Voting...';
 
   try {
     // Prepare contract interaction
     const account = await wallet.getAccount();
-    const counter = await CounterContract.at(AztecAddress.fromString(counterContractAddress), account!);
-    const interaction = counter.methods.increment();
+    const counter = await EasyPrivateVotingContract.at(AztecAddress.fromString(votingContractAddress), account!);
+    const interaction = counter.methods.cast_vote(candidate);
 
     // Send transaction
     await wallet.sendTransaction(interaction);
@@ -94,21 +104,26 @@ incrementCounterButton.addEventListener('click', async (e) => {
     displayError(error instanceof Error ? error.message : 'An unknown error occurred');
   } finally {
     button.disabled = false;
-    button.textContent = 'Increment Counter';
+    button.textContent = 'Vote';
   }
 });
 
 // Update the counter value
 async function updateCounterValue(account: Wallet) {
-  // Prepare contract interaction
-  const counter = await CounterContract.at(AztecAddress.fromString(counterContractAddress), account);
-  const interaction = counter.methods.get_counter(account.getAddress());
+  let results: { [key: number]: number } = {};
 
-  // Simulate the transaction
-  const value = await wallet.simulateTransaction(interaction);
-  
+  for (let i = 0; i < 5; i++) {
+    // Prepare contract interaction
+    const counter = await EasyPrivateVotingContract.at(AztecAddress.fromString(votingContractAddress), account);
+    const interaction = counter.methods.get_vote(i);
+
+    // Simulate the transaction
+    const value = await wallet.simulateTransaction(interaction);
+    results[i] = value;
+  }
+
   // Display the counter value
-  displayCounter(value);
+  displayCounter(results);
 }
 
 // UI functions
@@ -128,7 +143,7 @@ function displayStatusMessage(message: string) {
 function displayAccount(account: AccountWallet | null) {
   if (!account) {
     createAccountButton.style.display = 'block';
-    incrementCounterButton.disabled = true;
+    voteForm.style.display = 'none';
     return;
   }
 
@@ -136,9 +151,11 @@ function displayAccount(account: AccountWallet | null) {
   const content = `Account: ${address.slice(0, 6)}...${address.slice(-4)}`;
   accountDisplay.textContent = content;
   createAccountButton.style.display = 'none';
-  incrementCounterButton.disabled = false;
+  voteForm.style.display = 'block';
 }
 
-function displayCounter(value: number) {
-  counterValue.textContent = value.toString();
+function displayCounter(results: { [key: number]: number }) {
+  voteResults.textContent = Object.entries(results).map(
+    ([key, value]) => `Candidate ${+key + 1}: ${value} votes`
+  ).join('\n');
 }

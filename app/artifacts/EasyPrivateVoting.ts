@@ -34,21 +34,21 @@ import {
   type U128Like,
   type WrappedFieldLike,
 } from '@aztec/aztec.js';
-import CounterContractArtifactJson from '../../contracts/target/counter-Counter.json' assert { type: 'json' };
-export const CounterContractArtifact = loadContractArtifact(CounterContractArtifactJson as NoirCompiledContract);
+import EasyPrivateVotingContractArtifactJson from '../../contracts/target/counter-EasyPrivateVoting.json' assert { type: 'json' };
+export const EasyPrivateVotingContractArtifact = loadContractArtifact(EasyPrivateVotingContractArtifactJson as NoirCompiledContract);
 
 
 
 /**
- * Type-safe interface for contract Counter;
+ * Type-safe interface for contract EasyPrivateVoting;
  */
-export class CounterContract extends ContractBase {
+export class EasyPrivateVotingContract extends ContractBase {
   
   private constructor(
     instance: ContractInstanceWithAddress,
     wallet: Wallet,
   ) {
-    super(instance, CounterContractArtifact, wallet);
+    super(instance, EasyPrivateVotingContractArtifact, wallet);
   }
   
 
@@ -63,36 +63,36 @@ export class CounterContract extends ContractBase {
     address: AztecAddress,
     wallet: Wallet,
   ) {
-    return Contract.at(address, CounterContract.artifact, wallet) as Promise<CounterContract>;
+    return Contract.at(address, EasyPrivateVotingContract.artifact, wallet) as Promise<EasyPrivateVotingContract>;
   }
 
   
   /**
    * Creates a tx to deploy a new instance of this contract.
    */
-  public static deploy(wallet: Wallet, headstart: (bigint | number)) {
-    return new DeployMethod<CounterContract>(PublicKeys.default(), wallet, CounterContractArtifact, CounterContract.at, Array.from(arguments).slice(1));
+  public static deploy(wallet: Wallet, admin: AztecAddressLike) {
+    return new DeployMethod<EasyPrivateVotingContract>(PublicKeys.default(), wallet, EasyPrivateVotingContractArtifact, EasyPrivateVotingContract.at, Array.from(arguments).slice(1));
   }
 
   /**
    * Creates a tx to deploy a new instance of this contract using the specified public keys hash to derive the address.
    */
-  public static deployWithPublicKeys(publicKeys: PublicKeys, wallet: Wallet, headstart: (bigint | number)) {
-    return new DeployMethod<CounterContract>(publicKeys, wallet, CounterContractArtifact, CounterContract.at, Array.from(arguments).slice(2));
+  public static deployWithPublicKeys(publicKeys: PublicKeys, wallet: Wallet, admin: AztecAddressLike) {
+    return new DeployMethod<EasyPrivateVotingContract>(publicKeys, wallet, EasyPrivateVotingContractArtifact, EasyPrivateVotingContract.at, Array.from(arguments).slice(2));
   }
 
   /**
    * Creates a tx to deploy a new instance of this contract using the specified constructor method.
    */
-  public static deployWithOpts<M extends keyof CounterContract['methods']>(
+  public static deployWithOpts<M extends keyof EasyPrivateVotingContract['methods']>(
     opts: { publicKeys?: PublicKeys; method?: M; wallet: Wallet },
-    ...args: Parameters<CounterContract['methods'][M]>
+    ...args: Parameters<EasyPrivateVotingContract['methods'][M]>
   ) {
-    return new DeployMethod<CounterContract>(
+    return new DeployMethod<EasyPrivateVotingContract>(
       opts.publicKeys ?? PublicKeys.default(),
       opts.wallet,
-      CounterContractArtifact,
-      CounterContract.at,
+      EasyPrivateVotingContractArtifact,
+      EasyPrivateVotingContract.at,
       Array.from(arguments).slice(1),
       opts.method ?? 'constructor',
     );
@@ -104,23 +104,32 @@ export class CounterContract extends ContractBase {
    * Returns this contract's artifact.
    */
   public static get artifact(): ContractArtifact {
-    return CounterContractArtifact;
+    return EasyPrivateVotingContractArtifact;
   }
 
   /**
    * Returns this contract's artifact with public bytecode.
    */
   public static get artifactForPublic(): ContractArtifact {
-    return loadContractArtifactForPublic(CounterContractArtifactJson as NoirCompiledContract);
+    return loadContractArtifactForPublic(EasyPrivateVotingContractArtifactJson as NoirCompiledContract);
   }
   
 
-  public static get storage(): ContractStorageLayout<'counters'> {
+  public static get storage(): ContractStorageLayout<'admin' | 'tally' | 'vote_ended' | 'active_at_block'> {
       return {
-        counters: {
+        admin: {
       slot: new Fr(1n),
+    },
+tally: {
+      slot: new Fr(2n),
+    },
+vote_ended: {
+      slot: new Fr(3n),
+    },
+active_at_block: {
+      slot: new Fr(4n),
     }
-      } as ContractStorageLayout<'counters'>;
+      } as ContractStorageLayout<'admin' | 'tally' | 'vote_ended' | 'active_at_block'>;
     }
     
 
@@ -136,14 +145,17 @@ export class CounterContract extends ContractBase {
   /** Type-safe wrappers for the public methods exposed by the contract. */
   public declare methods: {
     
-    /** get_counter(sender: struct) */
-    get_counter: ((sender: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+    /** cast_vote(candidate: field) */
+    cast_vote: ((candidate: FieldLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
 
-    /** increment() */
-    increment: (() => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+    /** constructor(admin: struct) */
+    constructor: ((admin: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
 
-    /** initialize(headstart: integer) */
-    initialize: ((headstart: (bigint | number)) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+    /** end_vote() */
+    end_vote: (() => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+
+    /** get_vote(candidate: field) */
+    get_vote: ((candidate: FieldLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
 
     /** public_dispatch(selector: field) */
     public_dispatch: ((selector: FieldLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
