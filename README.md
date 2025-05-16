@@ -10,12 +10,12 @@ This is an example web app that demonstrates how to interact with an Aztec contr
 
 1. Install the Aztec tools from the first few steps in [Quick Start Guide](https://docs.aztec.network/developers/getting_started).
 
-Please note that this project uses `v0.86.0` version of Aztec SDK. If you wish to use a different version, please update the dependencies in the `app/package.json` file to match the version of your tools.
+Please note that this project uses `alpha-testnet` version of Aztec SDK (the same that is used in Aztec's public testnet). If you wish to use a different version, please update the dependencies in the `app/package.json` file to match the version of your tools.
 
-Alternatively, you can specify `v0.86.0` when updating Aztec tools by running the following commands:
+Alternatively, you can install `alpha-testnet` version of Aztec tools by running the below commands:
 
 ```sh
-aztec-up 0.86.0
+aztec-up alpha-testnet
 aztec start --sandbox
 ```
 
@@ -29,7 +29,7 @@ The build script compiles the contract and generates the artifacts.
 
 3. Deploy the contracts
 
-Run the JS deploy script to deploy the contracts:
+Run the JS deploy script to deploy the contracts (NodeJS v20.0):
 
 ```sh
 (cd app && yarn install)
@@ -52,7 +52,7 @@ The full process involves `Generating Client IVC proof`, and may take a few mome
 You can now interact with the deployed contract using the web app:
 
 - Create a new account
-  - Like before, this will take some time to generate proofs
+  - Like before, this will take some time to generate proofs (especially the first time as it needs to download a ~67MB proving key)
   - Note: this will save your account keys to your browser's local storage
 - Cast a vote for one of the 5 candidates
 - Voting again should throw an error

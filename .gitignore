@@ -27,3 +27,4 @@ dist-ssr
 *.sw?
 
 app/scripts/.store
+app/deployed-contract.json
