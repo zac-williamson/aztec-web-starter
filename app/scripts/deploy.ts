@@ -62,7 +62,7 @@ async function createAccount(pxe: PXE) {
 		skipPublicDeployment: true,
 	};
 	const provenInteraction = await deployMethod.prove(deployOpts);
-	await provenInteraction.send().wait({ timeout: 20 });
+	await provenInteraction.send().wait({ timeout: 120 });
 
 	await ecdsaAccount.register();
 	return ecdsaAccount.getWallet();
@@ -95,7 +95,7 @@ async function deployContract(pxe: PXE, deployer: Wallet) {
 			paymentMethod: new SponsoredFeePaymentMethod(sponsoredPFCContract.address)
 		},
 	});
-	await provenInteraction.send().wait({ timeout: 20 });
+	await provenInteraction.send().wait({ timeout: 120 });
 	await pxe.registerContract({ instance: contract, artifact: EasyPrivateVotingContract.artifact });
 
 	return {
