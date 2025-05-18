@@ -1,12 +1,12 @@
 import fs from 'fs';
 import path from 'path';
-import { AztecAddress, createAztecNodeClient, DeployMethod, DeployOptions, Fr, getContractInstanceFromDeployParams, PublicKeys, PXE, SponsoredFeePaymentMethod, Wallet } from "@aztec/aztec.js";
+import { AztecAddress, createAztecNodeClient, DeployMethod, Fr, getContractInstanceFromDeployParams, PublicKeys, PXE, SponsoredFeePaymentMethod, Wallet } from "@aztec/aztec.js";
 import { createPXEService, getPXEServiceConfig } from "@aztec/pxe/server";
 import { getEcdsaRAccount } from '@aztec/accounts/ecdsa/lazy';
 import { createStore } from "@aztec/kv-store/lmdb";
 import { randomBytes } from '@aztec/foundation/crypto';
 import { getDefaultInitializer } from '@aztec/stdlib/abi';
-import { EasyPrivateVotingContract } from '../../app/artifacts/EasyPrivateVoting';
+import { EasyPrivateVotingContract } from '../artifacts/EasyPrivateVoting';
 import { SponsoredFPCContractArtifact } from '@aztec/noir-contracts.js/SponsoredFPC';
 import { SPONSORED_FPC_SALT } from '@aztec/constants';
 
