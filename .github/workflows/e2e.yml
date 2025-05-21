@@ -1,4 +1,4 @@
-name: Playwright Tests
+name: E2E Tests
 on:
   push:
     branches: [main]
@@ -42,6 +42,10 @@ jobs:
     - name: Install Playwright Browsers
       working-directory: ./app
       run: yarn playwright install --with-deps
+
+    - name: Build app
+      working-directory: ./app
+      run: yarn build
 
     - name: Run tests
       working-directory: ./app

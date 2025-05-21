@@ -6,9 +6,9 @@ import deploymentInfo from '../deployed-contract.json';
 // Local variables
 let wallet: EmbeddedWallet;
 const nodeUrl = import.meta.env.VITE_AZTEC_NODE_URL;
-const votingContractDeployer = deploymentInfo.deploymentInfo.deployerAddress;
-const votingContractSalt = deploymentInfo.deploymentInfo.deploymentSalt;
-const votingContractAddress = deploymentInfo.deploymentInfo.contractAddress;
+const votingContractDeployer = deploymentInfo.deployerAddress;
+const votingContractSalt = deploymentInfo.deploymentSalt;
+const votingContractAddress = deploymentInfo.contractAddress;
 
 // DOM Elements
 const createAccountButton = document.querySelector<HTMLButtonElement>('#create-account')!;
