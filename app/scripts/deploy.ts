@@ -16,18 +16,19 @@ const PROVER_ENABLED = process.env.PROVER_ENABLED === 'false' ? false : true;
 async function setupPXE() {
 	const aztecNode = await createAztecNodeClient(NODE_URL);
 
+	const pxeDataDirectory = path.join(import.meta.dirname, '.store');
+	fs.rmSync(pxeDataDirectory, { recursive: true, force: true });
+	
 	const store = await createStore('pxe', {
-		dataDirectory: path.join(import.meta.dirname, '.store'),
+		dataDirectory: pxeDataDirectory,
 		dataStoreMapSizeKB: 1e6,
 	});
 
 	const config = getPXEServiceConfig();
 	config.dataDirectory = 'pxe';
 	config.proverEnabled = PROVER_ENABLED;
-	const l1Contracts = await aztecNode.getL1ContractAddresses();
 	const configWithContracts = {
 		...config,
-		l1Contracts,
 	};
 
 	const pxe = await createPXEService(aztecNode, configWithContracts, true, store);
@@ -105,9 +106,10 @@ async function deployContract(pxe: PXE, deployer: Wallet) {
 	}
 }
 
-
-async function main() {
+async function createAccountAndDeployContract() {
 	const pxe = await setupPXE();
+
+	// Register the SponsoredFPC contract (for sponsored fee payments)
 	await pxe.registerContract({ instance: await getSponsoredPFCContract(), artifact: SponsoredFPCContractArtifact });
 
 	// Create a new account
@@ -115,14 +117,16 @@ async function main() {
 
 	// Deploy the contract
 	const deploymentInfo = await deployContract(pxe, wallet);
-	console.log(deploymentInfo);
 
-	fs.writeFileSync(
-		path.join(import.meta.dirname, '../deployed-contract.json'),
-		JSON.stringify(deploymentInfo, null, 2)
-	);
+	const outputPath = path.join(import.meta.dirname, '../deployed-contract.json');
+	fs.writeFileSync(outputPath, JSON.stringify(deploymentInfo, null, 2));
 
-	console.log('\n\n\nContract deployed successfully. Deployment info saved to deployed-contract.json\n\n\nIMPORTANT: Do not lose this file as you will not be able to recover the contract address if you lose it.\n\n\n');
+	console.log(`\n\n\nContract deployed successfully. Deployment info saved to ${outputPath}\n\n\nIMPORTANT: Do not lose this file as you will not be able to recover the contract address if you lose it.\n\n\n`);
 }
 
-main();
+
+createAccountAndDeployContract().catch((error) => {
+	console.error(error);
+});
+
+export { createAccountAndDeployContract };
