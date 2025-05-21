@@ -18,7 +18,7 @@ async function setupPXE() {
 
 	const pxeDataDirectory = path.join(import.meta.dirname, '.store');
 	fs.rmSync(pxeDataDirectory, { recursive: true, force: true });
-	
+
 	const store = await createStore('pxe', {
 		dataDirectory: pxeDataDirectory,
 		dataStoreMapSizeKB: 1e6,
@@ -70,12 +70,7 @@ async function createAccount(pxe: PXE) {
 
 	return {
 		wallet,
-		credentials: {
-			salt: salt.toString(),
-			secretKey: secretKey.toString(),
-			signingKey: Buffer.from(signingKey).toString('hex'),
-			address: wallet.getAddress().toString()
-		}
+		signingKey,
 	};
 }
 
@@ -123,20 +118,24 @@ async function createAccountAndDeployContract() {
 	await pxe.registerContract({ instance: await getSponsoredPFCContract(), artifact: SponsoredFPCContractArtifact });
 
 	// Create a new account
-	const { wallet, credentials } = await createAccount(pxe);
+	const { wallet, signingKey } = await createAccount(pxe);
+
+	// Save the wallet info
+	const walletInfo = {
+		address: wallet.getAddress().toString(),
+		salt: wallet.salt.toString(),
+		secretKey: wallet.getSecretKey().toString(),
+		signingKey: Buffer.from(signingKey).toString('hex'),
+	}
+	fs.writeFileSync(path.join(import.meta.dirname, '../wallet-info.json'), JSON.stringify(walletInfo, null, 2));
+	console.log('\n\n\nWallet info saved to wallet-info.json\n\n\n');
 
 	// Deploy the contract
 	const deploymentInfo = await deployContract(pxe, wallet);
 
-	// Combine all information
-	const fullInfo = {
-		walletInfo: credentials,
-		deploymentInfo
-	};
-
+	// Save the deployment info
 	const outputPath = path.join(import.meta.dirname, '../deployed-contract.json');
-	fs.writeFileSync(outputPath, JSON.stringify(fullInfo, null, 2));
-
+	fs.writeFileSync(outputPath, JSON.stringify(deploymentInfo, null, 2));
 	console.log('\n\n\nContract deployed successfully. All info saved to deployed-contract.json\n\n\nIMPORTANT: Do not lose this file as you will not be able to recover the contract address if you lose it.\n\n\n');
 }
 

@@ -28,6 +28,7 @@ dist-ssr
 
 app/scripts/.store
 app/deployed-contract.json
+app/wallet-info.json
 
 
 # Playwright

@@ -59,6 +59,12 @@ You can now interact with the deployed contract using the web app:
 - Open another browser (or an incognito window), create a new account, and cast a vote
 - See the updated vote results in the first browser
 
+You can also run the E2E tests:
+
+```sh
+(cd app && yarn test)
+```
+
 <br />
 
 ## Disable client proofs
