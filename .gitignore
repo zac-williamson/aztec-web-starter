@@ -28,3 +28,10 @@ dist-ssr
 
 app/scripts/.store
 app/deployed-contract.json
+
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/

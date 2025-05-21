@@ -34,7 +34,7 @@ import {
   type U128Like,
   type WrappedFieldLike,
 } from '@aztec/aztec.js';
-import EasyPrivateVotingContractArtifactJson from '../../contracts/target/counter-EasyPrivateVoting.json' assert { type: 'json' };
+import EasyPrivateVotingContractArtifactJson from '../../contracts/target/counter-EasyPrivateVoting.json' with { type: 'json' };
 export const EasyPrivateVotingContractArtifact = loadContractArtifact(EasyPrivateVotingContractArtifactJson as NoirCompiledContract);
 
 
@@ -160,8 +160,8 @@ active_at_block: {
     /** public_dispatch(selector: field) */
     public_dispatch: ((selector: FieldLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
 
-    /** sync_notes() */
-    sync_notes: (() => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+    /** sync_private_state() */
+    sync_private_state: (() => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
   };
 
   

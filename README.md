@@ -10,12 +10,12 @@ This is an example web app that demonstrates how to interact with an Aztec contr
 
 1. Install the Aztec tools from the first few steps in [Quick Start Guide](https://docs.aztec.network/developers/getting_started).
 
-Please note that this project uses `alpha-testnet` version of Aztec SDK (the same that is used in Aztec's public testnet). If you wish to use a different version, please update the dependencies in the `app/package.json` file to match the version of your tools.
+Please note that this project uses `0.87.2` version of Aztec SDK. If you wish to use a different version, please update the dependencies in the `app/package.json` and in `contracts/Nargo.toml` file to match your version.
 
-Alternatively, you can install `alpha-testnet` version of Aztec tools by running the below commands:
+Alternatively, you can install `0.87.2` version of Aztec tools by running the below commands:
 
 ```sh
-aztec-up alpha-testnet
+aztec-up 0.87.2
 aztec start --sandbox
 ```
 
