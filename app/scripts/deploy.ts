@@ -1,12 +1,12 @@
 import fs from 'fs';
 import path from 'path';
-import { AztecAddress, createAztecNodeClient, DeployMethod, DeployOptions, Fr, getContractInstanceFromDeployParams, PublicKeys, PXE, SponsoredFeePaymentMethod, Wallet } from "@aztec/aztec.js";
+import { AztecAddress, createAztecNodeClient, DeployMethod, Fr, getContractInstanceFromDeployParams, PublicKeys, PXE, SponsoredFeePaymentMethod, Wallet } from "@aztec/aztec.js";
 import { createPXEService, getPXEServiceConfig } from "@aztec/pxe/server";
 import { getEcdsaRAccount } from '@aztec/accounts/ecdsa/lazy';
 import { createStore } from "@aztec/kv-store/lmdb";
 import { randomBytes } from '@aztec/foundation/crypto';
 import { getDefaultInitializer } from '@aztec/stdlib/abi';
-import { EasyPrivateVotingContract } from '../../app/artifacts/EasyPrivateVoting';
+import { EasyPrivateVotingContract } from '../artifacts/EasyPrivateVoting';
 import { SponsoredFPCContractArtifact } from '@aztec/noir-contracts.js/SponsoredFPC';
 import { SPONSORED_FPC_SALT } from '@aztec/constants';
 
@@ -14,7 +14,7 @@ const NODE_URL = process.env.NODE_URL || 'http://localhost:8080';
 const PROVER_ENABLED = process.env.PROVER_ENABLED === 'false' ? false : true;
 
 async function setupPXE() {
-	const aztecNode = await createAztecNodeClient(NODE_URL);
+	const aztecNode = createAztecNodeClient(NODE_URL);
 
 	const pxeDataDirectory = path.join(import.meta.dirname, '.store');
 	fs.rmSync(pxeDataDirectory, { recursive: true, force: true });
@@ -63,10 +63,20 @@ async function createAccount(pxe: PXE) {
 		skipPublicDeployment: true,
 	};
 	const provenInteraction = await deployMethod.prove(deployOpts);
-	await provenInteraction.send().wait({ timeout: 20 });
+	await provenInteraction.send().wait({ timeout: 120 });
 
 	await ecdsaAccount.register();
-	return ecdsaAccount.getWallet();
+	const wallet = await ecdsaAccount.getWallet();
+
+	return {
+		wallet,
+		credentials: {
+			salt: salt.toString(),
+			secretKey: secretKey.toString(),
+			signingKey: Buffer.from(signingKey).toString('hex'),
+			address: wallet.getAddress().toString()
+		}
+	};
 }
 
 async function deployContract(pxe: PXE, deployer: Wallet) {
@@ -96,7 +106,7 @@ async function deployContract(pxe: PXE, deployer: Wallet) {
 			paymentMethod: new SponsoredFeePaymentMethod(sponsoredPFCContract.address)
 		},
 	});
-	await provenInteraction.send().wait({ timeout: 20 });
+	await provenInteraction.send().wait({ timeout: 120 });
 	await pxe.registerContract({ instance: contract, artifact: EasyPrivateVotingContract.artifact });
 
 	return {
@@ -113,17 +123,22 @@ async function createAccountAndDeployContract() {
 	await pxe.registerContract({ instance: await getSponsoredPFCContract(), artifact: SponsoredFPCContractArtifact });
 
 	// Create a new account
-	const wallet = await createAccount(pxe);
+	const { wallet, credentials } = await createAccount(pxe);
 
 	// Deploy the contract
 	const deploymentInfo = await deployContract(pxe, wallet);
 
+	// Combine all information
+	const fullInfo = {
+		walletInfo: credentials,
+		deploymentInfo
+	};
+
 	const outputPath = path.join(import.meta.dirname, '../deployed-contract.json');
-	fs.writeFileSync(outputPath, JSON.stringify(deploymentInfo, null, 2));
+	fs.writeFileSync(outputPath, JSON.stringify(fullInfo, null, 2));
 
-	console.log(`\n\n\nContract deployed successfully. Deployment info saved to ${outputPath}\n\n\nIMPORTANT: Do not lose this file as you will not be able to recover the contract address if you lose it.\n\n\n`);
+	console.log('\n\n\nContract deployed successfully. All info saved to deployed-contract.json\n\n\nIMPORTANT: Do not lose this file as you will not be able to recover the contract address if you lose it.\n\n\n');
 }
-
 
 createAccountAndDeployContract().catch((error) => {
 	console.error(error);
