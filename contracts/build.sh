@@ -1,3 +1,6 @@
+rm -rf ../app/artifacts
+rm -rf ./target
+
 # Compile the contracts
 aztec-nargo compile
 
