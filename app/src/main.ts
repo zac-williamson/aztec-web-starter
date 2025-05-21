@@ -1,5 +1,5 @@
 import { AztecAddress, Fr, Wallet, type AccountWallet } from '@aztec/aztec.js';
-import { EmbeddedWallet } from './embedded-wallet.ts'
+import { EmbeddedWallet } from './embedded-wallet.ts';
 import { EasyPrivateVotingContract } from '../artifacts/EasyPrivateVoting.ts';
 import deploymentInfo from '../deployed-contract.json';
 
@@ -11,14 +11,16 @@ const votingContractSalt = deploymentInfo.deploymentSalt;
 const votingContractAddress = deploymentInfo.contractAddress;
 
 // DOM Elements
-const createAccountButton = document.querySelector<HTMLButtonElement>('#create-account')!;
+const createAccountButton =
+  document.querySelector<HTMLButtonElement>('#create-account')!;
 const voteForm = document.querySelector<HTMLFormElement>('.vote-form')!;
 const voteButton = document.querySelector<HTMLButtonElement>('#vote-button')!;
 const voteInput = document.querySelector<HTMLInputElement>('#vote-input')!;
-const accountDisplay = document.querySelector<HTMLDivElement>('#account-display')!;
-const statusMessage = document.querySelector<HTMLDivElement>('#status-message')!;
+const accountDisplay =
+  document.querySelector<HTMLDivElement>('#account-display')!;
+const statusMessage =
+  document.querySelector<HTMLDivElement>('#status-message')!;
 const voteResults = document.querySelector<HTMLDivElement>('#vote-results')!;
-
 
 // On page load
 document.addEventListener('DOMContentLoaded', async () => {
@@ -50,7 +52,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       displayStatusMessage('Create a new account to cast a vote.');
     }
   } catch (error) {
-    displayError(error instanceof Error ? error.message : 'An unknown error occurred');
+    displayError(
+      error instanceof Error ? error.message : 'An unknown error occurred'
+    );
   }
 });
 
@@ -68,7 +72,9 @@ createAccountButton.addEventListener('click', async (e) => {
     // Refresh counter value (not really needed though, as the default value is 0)
     await updateCounterValue(account);
   } catch (error) {
-    displayError(error instanceof Error ? error.message : 'An unknown error occurred');
+    displayError(
+      error instanceof Error ? error.message : 'An unknown error occurred'
+    );
   } finally {
     button.disabled = false;
     button.textContent = 'Create Account';
@@ -92,7 +98,10 @@ voteButton.addEventListener('click', async (e) => {
   try {
     // Prepare contract interaction
     const account = await wallet.getAccount();
-    const counter = await EasyPrivateVotingContract.at(AztecAddress.fromString(votingContractAddress), account!);
+    const counter = await EasyPrivateVotingContract.at(
+      AztecAddress.fromString(votingContractAddress),
+      account!
+    );
     const interaction = counter.methods.cast_vote(candidate);
 
     // Send transaction
@@ -101,7 +110,9 @@ voteButton.addEventListener('click', async (e) => {
     // Update counter value
     updateCounterValue(account!);
   } catch (error) {
-    displayError(error instanceof Error ? error.message : 'An unknown error occurred');
+    displayError(
+      error instanceof Error ? error.message : 'An unknown error occurred'
+    );
   } finally {
     button.disabled = false;
     button.textContent = 'Vote';
@@ -114,7 +125,10 @@ async function updateCounterValue(account: Wallet) {
 
   for (let i = 0; i < 5; i++) {
     // Prepare contract interaction
-    const counter = await EasyPrivateVotingContract.at(AztecAddress.fromString(votingContractAddress), account);
+    const counter = await EasyPrivateVotingContract.at(
+      AztecAddress.fromString(votingContractAddress),
+      account
+    );
     const interaction = counter.methods.get_vote(i);
 
     // Simulate the transaction
@@ -155,7 +169,7 @@ function displayAccount(account: AccountWallet | null) {
 }
 
 function displayCounter(results: { [key: number]: number }) {
-  voteResults.textContent = Object.entries(results).map(
-    ([key, value]) => `Candidate ${key}: ${value} votes`
-  ).join('\n');
+  voteResults.textContent = Object.entries(results)
+    .map(([key, value]) => `Candidate ${key}: ${value} votes`)
+    .join('\n');
 }

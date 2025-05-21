@@ -9,7 +9,7 @@ test('load the app correctly', async ({ page }) => {
 
 test('create an account', async ({ page }) => {
   await page.goto('/');
-  
+
   const createAccountButton = await page.locator('#create-account');
   const accountDisplay = await page.locator('#account-display');
 
@@ -40,7 +40,10 @@ test('cast vote', async ({ page }) => {
   await expect(voteButton).toBeVisible();
   await voteInput.selectOption('3');
   await voteButton.click();
-  await expect(voteButton).toBeEnabled({ enabled: true, timeout: proofTimeout });
+  await expect(voteButton).toBeEnabled({
+    enabled: true,
+    timeout: proofTimeout,
+  });
 
   // Verify vote results
   await expect(voteResults).toHaveText(/Candidate 0: 0 votes/);

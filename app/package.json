@@ -11,7 +11,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "serve": "vite preview --port ${PORT:-3000} --host 0.0.0.0",
-    "test": "PROVER_ENABLED=false yarn deploy-contracts && playwright test"
+    "test": "PROVER_ENABLED=false yarn deploy-contracts && playwright test",
+    "lint": "prettier --check ./src"
   },
   "dependencies": {
     "@aztec/accounts": "0.87.2",
@@ -22,6 +23,7 @@
   "devDependencies": {
     "@playwright/test": "^1.52.0",
     "@types/node": "^22.15.21",
+    "prettier": "^3.5.3",
     "tsx": "^4.19.4",
     "typescript": "~5.7.2",
     "vite": "^6.2.0",

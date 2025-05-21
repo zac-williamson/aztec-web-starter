@@ -5,7 +5,7 @@ export default defineConfig(({ mode }) => {
   return {
     optimizeDeps: {
       // We require wasm files exported by these packages to be served separately
-      exclude: ['@aztec/noir-noirc_abi', '@aztec/noir-acvm_js', '@aztec/bb.js']
+      exclude: ['@aztec/noir-noirc_abi', '@aztec/noir-acvm_js', '@aztec/bb.js'],
     },
     server: {
       headers: {
@@ -13,8 +13,6 @@ export default defineConfig(({ mode }) => {
         'Cross-Origin-Embedder-Policy': 'require-corp',
       },
     },
-    plugins: [
-      nodePolyfills({ include: ['buffer', 'path'] }),
-    ],
+    plugins: [nodePolyfills({ include: ['buffer', 'path'] })],
   };
 });

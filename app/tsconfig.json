@@ -15,7 +15,7 @@
 
     /* Linting */
     "strict": true,
-    "allowArbitraryExtensions": true,
+    "allowArbitraryExtensions": true
   },
-  "include": ["./src", "./artifacts"],
+  "include": ["./src", "./artifacts"]
 }

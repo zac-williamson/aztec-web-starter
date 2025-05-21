@@ -16,7 +16,6 @@ import { getPXEServiceConfig } from '@aztec/pxe/config';
 import { createPXEService } from '@aztec/pxe/client/lazy';
 import { ContractArtifact, getDefaultInitializer } from '@aztec/stdlib/abi';
 
-
 const logger = createLogger('wallet');
 const LocalStorageKey = 'aztec-account';
 
@@ -26,7 +25,7 @@ const LocalStorageKey = 'aztec-account';
 export class EmbeddedWallet {
   private pxe!: PXE;
 
-  constructor(private nodeUrl: string) { }
+  constructor(private nodeUrl: string) {}
 
   async initialize() {
     // Create Aztec Node Client
@@ -51,11 +50,14 @@ export class EmbeddedWallet {
 
   // Internal method to use the Sponsored FPC Contract for fee payment
   async getSponsoredPFCContract() {
-    const instance = await getContractInstanceFromDeployParams(SponsoredFPCContractArtifact, {
-      salt: new Fr(SPONSORED_FPC_SALT),
-    });
+    const instance = await getContractInstanceFromDeployParams(
+      SponsoredFPCContractArtifact,
+      {
+        salt: new Fr(SPONSORED_FPC_SALT),
+      }
+    );
 
-    return instance
+    return instance;
   }
 
   // Create a new account
@@ -70,7 +72,12 @@ export class EmbeddedWallet {
     const signingKey = randomBytes(32);
 
     // Create an ECDSA account
-    const ecdsaAccount = await getEcdsaRAccount(this.pxe, secretKey, signingKey, salt);
+    const ecdsaAccount = await getEcdsaRAccount(
+      this.pxe,
+      secretKey,
+      signingKey,
+      salt
+    );
 
     // Deploy the account
     const deployMethod = await ecdsaAccount.getDeployMethod();
@@ -93,12 +100,15 @@ export class EmbeddedWallet {
 
     // Store the account in local storage
     const ecdsaWallet = await ecdsaAccount.getWallet();
-    localStorage.setItem(LocalStorageKey, JSON.stringify({
-      address: ecdsaWallet.getAddress().toString(),
-      signingKey: signingKey.toString('hex'),
-      secretKey: secretKey.toString(),
-      salt: salt.toString(),
-    }));
+    localStorage.setItem(
+      LocalStorageKey,
+      JSON.stringify({
+        address: ecdsaWallet.getAddress().toString(),
+        signingKey: signingKey.toString('hex'),
+        secretKey: secretKey.toString(),
+        salt: salt.toString(),
+      })
+    );
 
     // Register the account with PXE
     await ecdsaAccount.register();
@@ -113,7 +123,8 @@ export class EmbeddedWallet {
     }
     const parsed = JSON.parse(account);
 
-    const ecdsaAccount = await getEcdsaRAccount(this.pxe,
+    const ecdsaAccount = await getEcdsaRAccount(
+      this.pxe,
       Fr.fromString(parsed.secretKey),
       Buffer.from(parsed.signingKey, 'hex'),
       Fr.fromString(parsed.salt)
@@ -125,7 +136,12 @@ export class EmbeddedWallet {
   }
 
   // Register a contract with PXE
-  async registerContract(artifact: ContractArtifact, deployer: AztecAddress, deploymentSalt: Fr, constructorArgs: any[]) {
+  async registerContract(
+    artifact: ContractArtifact,
+    deployer: AztecAddress,
+    deploymentSalt: Fr,
+    constructorArgs: any[]
+  ) {
     const instance = await getContractInstanceFromDeployParams(artifact, {
       constructorArtifact: getDefaultInitializer(artifact),
       constructorArgs: constructorArgs,
@@ -142,13 +158,13 @@ export class EmbeddedWallet {
   // Send a transaction with the Sponsored FPC Contract for fee payment
   async sendTransaction(interaction: ContractFunctionInteraction) {
     const sponsoredPFCContract = await this.getSponsoredPFCContract();
-    const provenInteraction = await interaction.prove(
-      {
-        fee: {
-          paymentMethod: new SponsoredFeePaymentMethod(sponsoredPFCContract.address),
-        }
-      }
-    );
+    const provenInteraction = await interaction.prove({
+      fee: {
+        paymentMethod: new SponsoredFeePaymentMethod(
+          sponsoredPFCContract.address
+        ),
+      },
+    });
 
     await provenInteraction.send().wait({ timeout: 120 });
   }
