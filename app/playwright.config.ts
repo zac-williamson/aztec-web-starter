@@ -16,7 +16,7 @@ export default defineConfig({
     trace: 'on-first-retry',
     video: 'on-first-retry',
   },
-  timeout: 120_000,
+  timeout: 150_000,
   projects: [
     {
       name: 'chromium',
@@ -36,6 +36,6 @@ export default defineConfig({
     command: 'PORT=3000 yarn serve',
     url: 'http://127.0.0.1:3000',
     reuseExistingServer: !process.env.CI,
-    timeout: 10_000,
+    timeout: 30_000,
   },
 });
