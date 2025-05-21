@@ -43,6 +43,10 @@ jobs:
       working-directory: ./app
       run: yarn playwright install --with-deps
 
+    - name: Deploy contracts
+      working-directory: ./app
+      run: yarn deploy-contracts
+
     - name: Build app
       working-directory: ./app
       run: yarn build
