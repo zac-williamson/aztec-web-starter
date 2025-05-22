@@ -16,7 +16,7 @@ import { getEcdsaRAccount } from '@aztec/accounts/ecdsa/lazy';
 import { createStore } from '@aztec/kv-store/lmdb';
 import { randomBytes } from '@aztec/foundation/crypto';
 import { getDefaultInitializer } from '@aztec/stdlib/abi';
-import { EasyPrivateVotingContract } from '../artifacts/EasyPrivateVoting';
+import { EasyPrivateVotingContract } from '../artifacts/EasyPrivateVoting.js';
 import { SponsoredFPCContractArtifact } from '@aztec/noir-contracts.js/SponsoredFPC';
 import { SPONSORED_FPC_SALT } from '@aztec/constants';
 

@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     wallet = new EmbeddedWallet(nodeUrl);
     await wallet.initialize();
 
-    // Register Counter contract with PXE
+    // Register voting contract with wallet/PXE
     displayStatusMessage('Registering Private Counter...');
     await wallet.registerContract(
       EasyPrivateVotingContract.artifact,
@@ -44,9 +44,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const account = await wallet.getAccount();
     await displayAccount(account);
 
-    // Refresh counter if account exists
+    // Refresh tally if account exists
     if (account) {
-      await updateCounterValue(account);
+      await updateVoteTally(account);
       displayStatusMessage('');
     } else {
       displayStatusMessage('Create a new account to cast a vote.');
@@ -67,10 +67,10 @@ createAccountButton.addEventListener('click', async (e) => {
 
   try {
     const account = await wallet.createAccount();
-    displayAccount(account);
 
-    // Refresh counter value (not really needed though, as the default value is 0)
-    await updateCounterValue(account);
+    await updateVoteTally(account);
+
+    displayAccount(account);
   } catch (error) {
     displayError(
       error instanceof Error ? error.message : 'An unknown error occurred'
@@ -81,7 +81,7 @@ createAccountButton.addEventListener('click', async (e) => {
   }
 });
 
-// Increment the counter
+// Cast a vote
 voteButton.addEventListener('click', async (e) => {
   e.preventDefault();
 
@@ -98,17 +98,17 @@ voteButton.addEventListener('click', async (e) => {
   try {
     // Prepare contract interaction
     const account = await wallet.getAccount();
-    const counter = await EasyPrivateVotingContract.at(
+    const votingContract = await EasyPrivateVotingContract.at(
       AztecAddress.fromString(votingContractAddress),
       account!
     );
-    const interaction = counter.methods.cast_vote(candidate);
+    const interaction = votingContract.methods.cast_vote(candidate);
 
     // Send transaction
     await wallet.sendTransaction(interaction);
 
-    // Update counter value
-    updateCounterValue(account!);
+    // Update tally
+    updateVoteTally(account!);
   } catch (error) {
     displayError(
       error instanceof Error ? error.message : 'An unknown error occurred'
@@ -119,25 +119,25 @@ voteButton.addEventListener('click', async (e) => {
   }
 });
 
-// Update the counter value
-async function updateCounterValue(account: Wallet) {
+// Update the tally
+async function updateVoteTally(account: Wallet) {
   let results: { [key: number]: number } = {};
 
   for (let i = 0; i < 5; i++) {
     // Prepare contract interaction
-    const counter = await EasyPrivateVotingContract.at(
+    const votingContract = await EasyPrivateVotingContract.at(
       AztecAddress.fromString(votingContractAddress),
       account
     );
-    const interaction = counter.methods.get_vote(i);
+    const interaction = votingContract.methods.get_vote(i);
 
     // Simulate the transaction
     const value = await wallet.simulateTransaction(interaction);
     results[i] = value;
   }
 
-  // Display the counter value
-  displayCounter(results);
+  // Display the tally
+  displayTally(results);
 }
 
 // UI functions
@@ -168,8 +168,8 @@ function displayAccount(account: AccountWallet | null) {
   voteForm.style.display = 'block';
 }
 
-function displayCounter(results: { [key: number]: number }) {
-  voteResults.textContent = Object.entries(results)
+function displayTally(results: { [key: number]: number }) {
+  voteResults.innerHTML = Object.entries(results)
     .map(([key, value]) => `Candidate ${key}: ${value} votes`)
     .join('\n');
 }

@@ -1,4 +1,3 @@
-rm -rf ../app/artifacts
 rm -rf ./target
 rm -rf ./codegenCache.json
 
@@ -6,4 +5,6 @@ rm -rf ./codegenCache.json
 aztec-nargo compile
 
 # Generate the artifacts and save to the app directory
-aztec codegen target --outdir ../app/artifacts
+aztec codegen target --outdir ./target
+
+cp ./target/*.ts ./target/*.json ./../app/artifacts

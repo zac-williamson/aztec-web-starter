@@ -34,7 +34,7 @@ import {
   type U128Like,
   type WrappedFieldLike,
 } from '@aztec/aztec.js';
-import EasyPrivateVotingContractArtifactJson from '../../contracts/target/counter-EasyPrivateVoting.json' with { type: 'json' };
+import EasyPrivateVotingContractArtifactJson from './private_voting-EasyPrivateVoting.json' with { type: 'json' };
 export const EasyPrivateVotingContractArtifact = loadContractArtifact(EasyPrivateVotingContractArtifactJson as NoirCompiledContract);
 
 

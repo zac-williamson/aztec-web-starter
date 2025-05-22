@@ -1,27 +1,10 @@
 import { test, expect } from '@playwright/test';
 
-const proofTimeout = 60_000;
+const proofTimeout = 150_000;
 
-test('load the app correctly', async ({ page }) => {
+test('create account and cast vote', async ({ page }, testInfo) => {
   await page.goto('/');
   await expect(page).toHaveTitle(/Private Voting/);
-});
-
-test('create an account', async ({ page }) => {
-  await page.goto('/');
-
-  const createAccountButton = await page.locator('#create-account');
-  const accountDisplay = await page.locator('#account-display');
-
-  await expect(createAccountButton).toBeVisible();
-  await createAccountButton.click();
-
-  await expect(accountDisplay).toBeVisible({ timeout: proofTimeout });
-  await expect(accountDisplay).toHaveText(/Account: 0x[a-fA-F0-9]{4}/);
-});
-
-test('cast vote', async ({ page }) => {
-  await page.goto('/');
 
   const createAccountButton = await page.locator('#create-account');
   const accountDisplay = await page.locator('#account-display');
@@ -32,13 +15,36 @@ test('cast vote', async ({ page }) => {
   // Create account
   await expect(createAccountButton).toBeVisible();
   await createAccountButton.click();
-  await expect(accountDisplay).toBeVisible({ timeout: proofTimeout });
+
+  await expect(createAccountButton).toBeHidden({ timeout: proofTimeout });
+  await expect(accountDisplay).toBeVisible();
   await expect(accountDisplay).toHaveText(/Account: 0x[a-fA-F0-9]{4}/);
 
   // Cast vote
+  // Choose the candidate to vote for based on the browser used to run the test.
+  // This is a hack to avoid race conditions as test are run in parallel with 
+  // multiple browsers against the same network (sandbox) and contract.
+  // Ideally we should deploy contracts for each test, but this will result in a slow CI.
+  const candidateId = {
+    'chromium': 1,
+    'firefox': 2,
+    'webkit': 3,
+  }[testInfo.project.name];
+
+  // Get the current vote count for the candidate
+  await expect(voteResults).toHaveText(/.+/, { timeout: 10_000 });
+  const currentResults = await voteResults.textContent();
+  console.log(currentResults);
+  
+  const match = currentResults.match(new RegExp(`Candidate ${candidateId}: (\\d+) votes`));
+  const currentResultsNumber = parseInt(match?.[1]);
+  console.log(candidateId, currentResults);
+
+  expect(currentResultsNumber).toBeGreaterThanOrEqual(0);
+
   await expect(voteInput).toBeVisible();
   await expect(voteButton).toBeVisible();
-  await voteInput.selectOption('3');
+  await voteInput.selectOption(candidateId.toString());
   await voteButton.click();
   await expect(voteButton).toBeEnabled({
     enabled: true,
@@ -46,6 +52,7 @@ test('cast vote', async ({ page }) => {
   });
 
   // Verify vote results
+  const newVoteCount = currentResultsNumber + 1;
+  await expect(voteResults).toHaveText(new RegExp(`Candidate ${candidateId}: ${newVoteCount} votes`));
   await expect(voteResults).toHaveText(/Candidate 0: 0 votes/);
-  await expect(voteResults).toHaveText(/Candidate 3: 1 votes/);
 });
