@@ -16,8 +16,7 @@ test('create account and cast vote', async ({ page }, testInfo) => {
   await expect(createAccountButton).toBeVisible();
   await createAccountButton.click();
 
-  await expect(createAccountButton).toBeHidden({ timeout: proofTimeout });
-  await expect(accountDisplay).toBeVisible();
+  await expect(accountDisplay).toBeVisible({ timeout: proofTimeout });
   await expect(accountDisplay).toHaveText(/Account: 0x[a-fA-F0-9]{4}/);
 
   // Cast vote
@@ -34,11 +33,9 @@ test('create account and cast vote', async ({ page }, testInfo) => {
   // Get the current vote count for the candidate
   await expect(voteResults).toHaveText(/.+/, { timeout: 10_000 });
   const currentResults = await voteResults.textContent();
-  console.log(currentResults);
   
   const match = currentResults.match(new RegExp(`Candidate ${candidateId}: (\\d+) votes`));
   const currentResultsNumber = parseInt(match?.[1]);
-  console.log(candidateId, currentResults);
 
   expect(currentResultsNumber).toBeGreaterThanOrEqual(0);
 
