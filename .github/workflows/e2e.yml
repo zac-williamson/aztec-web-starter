@@ -18,17 +18,7 @@ jobs:
     - name: Set up Docker
       uses: docker/setup-buildx-action@v2
 
-    - name: Cache Aztec CLI
-      uses: actions/cache@v3
-      id: aztec-cache
-      with:
-        path: ~/.aztec
-        key: ${{ runner.os }}-aztec-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-aztec-
-
     - name: Install Aztec CLI
-      if: steps.aztec-cache.outputs.cache-hit != 'true'
       run: |
         curl -s https://install.aztec.network > tmp.sh
         bash tmp.sh <<< yes "yes"
@@ -49,17 +39,7 @@ jobs:
       working-directory: ./app
       run: npm install -g yarn && yarn
 
-    - name: Cache Playwright browsers
-      uses: actions/cache@v3
-      id: playwright-cache
-      with:
-        path: ~/.cache/ms-playwright
-        key: ${{ runner.os }}-playwright-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-playwright-
-
     - name: Install Playwright Browsers
-      if: steps.playwright-cache.outputs.cache-hit != 'true'
       working-directory: ./app
       run: yarn playwright install --with-deps
 
