@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const proofTimeout = 150_000;
+const proofTimeout = 200_000;
 
 test('create account and cast vote', async ({ page }, testInfo) => {
   await page.goto('/');

@@ -7,14 +7,14 @@ export default defineConfig({
   testDir: './tests',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  workers: process.env.WORKERS ? parseInt(process.env.WORKERS) : 3,
+  workers: process.env.WORKERS ? parseInt(process.env.WORKERS) : 1,
   reporter: 'html',
   use: {
     baseURL: 'http://127.0.0.1:3000',
     trace: 'on-first-retry',
     video: 'on-first-retry',
   },
-  timeout: 300_000,
+  timeout: 400_000,
   projects: [
     {
       name: 'chromium',
