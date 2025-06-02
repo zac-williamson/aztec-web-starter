@@ -32,7 +32,7 @@
     "@aztec/stdlib": "0.87.4"
   },
   "devDependencies": {
-    "@playwright/test": "1.48.0",
+    "@playwright/test": "1.52.0",
     "@types/node": "^22.15.17",
     "assert": "^2.1.0",
     "buffer": "^6.0.3",
