@@ -28,12 +28,8 @@ jobs:
 
     - name: Set Aztec version and start sandbox
       run: |
-        aztec-up 0.87.2 
+        aztec-up 0.87.4 
         aztec start --sandbox &
-
-    - name: Compile contracts
-      run: script -e -c "${AZTEC_NARGO:-aztec-nargo} compile"
-      working-directory: ./contracts
 
     - name: Install dependencies
       working-directory: ./app
@@ -43,23 +39,8 @@ jobs:
       working-directory: ./app
       run: yarn playwright install --with-deps
 
-    - name: Deploy contracts
-      working-directory: ./app
-      env:
-        PROVER_ENABLED: false
-      run: yarn deploy-contracts
-
-    - name: Build app
-      working-directory: ./app
+    - name: Build
       run: yarn build
 
     - name: Run tests
-      working-directory: ./app
       run: yarn test
-
-    - uses: actions/upload-artifact@v4
-      if: ${{ !cancelled() }}
-      with:
-        name: playwright-report
-        path: app/playwright-report/
-        retention-days: 30

@@ -4,16 +4,27 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Private Voting on Aztec</title>
-    <link rel="stylesheet" href="./src/style.css" />
   </head>
 
   <body>
     <nav class="navbar">
       <div class="nav-title">Private Voting</div>
-      <div id="account-display" class="account-display"></div>
-      <button id="create-account" type="button" style="display: none">
-        Create Account
-      </button>
+
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <div id="account-display" class="account-display"></div>
+
+        <select id="test-account-number" style="display: none">
+          <option value="1">Account 1</option>
+          <option value="2">Account 2</option>
+          <option value="3">Account 3</option>
+        </select>
+        <button id="connect-test-account" type="button" style="display: none">
+          Connect Test Account
+        </button>
+        <button id="create-account" type="button" style="display: none">
+          Create Account
+        </button>
+      </div>
     </nav>
 
     <main class="main-content">
@@ -39,7 +50,5 @@
 
       <div id="status-message" class="status-message"></div>
     </main>
-
-    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
