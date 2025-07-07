@@ -1,5 +1,5 @@
 [package]
-name = "private_voting"
+name = "chess_contract"
 type = "contract"
 
 
